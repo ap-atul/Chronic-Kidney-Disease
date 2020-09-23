@@ -54,8 +54,8 @@ Classes
  * Naive Bayes
  * KNN
 
-## Preprocessing
-* Selecting duration, station (start and end ids), class (member, casual)
+## Accuracies
+
 (These are the saved models accuracies)
 1. KNN accuracy: 
     * Custom : 90.62
