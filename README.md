@@ -70,7 +70,7 @@ Classes
     * SKLearn : 100
 
 ## Directory details
-1. processed_dataset : processed csv file
+1. dataset : processed csv file
 2. charts : plots to visualize data
 3. lib : custom implementations of all the algos
 4. model : saved pre-trained model (both custom and inbuilt)
