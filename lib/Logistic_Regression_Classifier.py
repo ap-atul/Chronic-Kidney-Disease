@@ -9,13 +9,18 @@ using coefficient calculations and sigmoid function
 
 
 class LR:
+    """
+    Logistic Regression Classifier
+
+    Attributes
+    ----------
+    l_rate : float
+        initial learning rate
+    n_epoch : int
+        number of iterations
+    """
+
     def __init__(self, l_rate=0.1, n_epoch=100):
-        """
-        LR requires a error limit and no of iterations
-        default values
-        :param l_rate: 0.1
-        :param n_epoch: 100
-        """
         self.l_rate = l_rate
         self.n_epoch = n_epoch
         self.coefficients = []
@@ -24,9 +29,13 @@ class LR:
         """
         run training and calculate coefficients for
         each such data
-        :param X_train: training data
-        :param Y_train: testing data
-        :return: None
+
+        Parameters
+        ----------
+        X_train : array
+            training array
+        Y_train : array
+            training labels
         """
         self.coefficients = [0.0 for i in range(len(X_train[0]) + 1)]
         for epoch in tqdm(range(self.n_epoch)):
@@ -42,8 +51,11 @@ class LR:
     def predict_cal(self, row):
         """
         Run the prediction for each data
-        :param row: data row
-        :return: single prediction
+
+        Parameters
+        ----------
+        row : array
+            current row in the testing samples
         """
         u = self.coefficients[0]
         for i in range(len(row) - 1):
@@ -52,9 +64,12 @@ class LR:
 
     def predict(self, X_validation):
         """
-        predict the data set
-        :param X_validation: test data
-        :return: list of predictions
+        Prediction done on the input testing samples
+
+        Parameters
+        ---------
+        X_validation : array
+            testing samples
         """
         predictions = list()
         # make predictions (validate)

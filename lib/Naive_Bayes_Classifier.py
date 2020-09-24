@@ -1,22 +1,39 @@
 import numpy as np
 
-"""Bayes’ Theorem provides a way that we can calculate the probability
+"""
+Bayes’ Theorem provides a way that we can calculate the probability
  of a piece of data belonging to a given class, 
  given our prior knowledge. Bayes’ Theorem is stated as:
 
-    P(class|data) = (P(data|class) * P(class)) / P(data)
+    `P(class|data) = (P(data|class) * P(class)) / P(data)`
 
 Where P(class|data) is the probability of class given the provided data.
 """
 
 
 class NaiveBayes:
+    """
+    Naive Bayes Classifier
+
+    Attributes
+    ----------
+    classes_prior : dict
+        initial classes (unique)
+    classes_variance : dict
+        variances of all the input training samples
+    classes_mean : dict
+        mean of all input training samples
+    num_examples : int
+        number of examples in training samples
+    num_features : int
+        number of features in training samples
+    num_classes : int
+        unique labels
+    eps : float
+        error
+    """
+
     def __init__(self, X, y):
-        """
-        initialization, storing the shapes
-        :param X: training features
-        :param y: training labels
-        """
         self.classes_prior = {}
         self.classes_variance = {}
         self.classes_mean = {}
@@ -26,11 +43,15 @@ class NaiveBayes:
 
     def fit(self, X, y):
         """
-        training function that runs and calculates mean
+        Training function that runs and calculates mean
         and variance for each set
-        :param X: training features
-        :param y: training label
-        :return: self.object
+
+        Parameters
+        ----------
+        X : array
+            training features
+        y : array
+            training labels
         """
 
         for c in range(self.num_classes):
@@ -42,11 +63,13 @@ class NaiveBayes:
 
     def predict(self, X):
         """
-        prediction function that calculates the prob
+        Prediction function that calculates the prob
         from the mean and var calculated
-        Note:: using log to minimize the error
-        :param X: test set
-        :return: list of predictions
+
+        Parameters
+        ----------
+        X : array
+            testing samples
         """
         self.num_examples, self.num_features = X.shape
         probs = np.zeros((self.num_examples, self.num_classes))
@@ -62,11 +85,21 @@ class NaiveBayes:
 
     def density_function(self, x, mean, sigma):
         """
-        using the Guassian Distribution to map the probs
-        :param x: row set
-        :param mean: the current mean
-        :param sigma: variance
-        :return: returns the prob
+        Using the Guassian Distribution to map the probs
+
+        Parameters
+        ----------
+        x : array
+            testing sample
+        mean : float
+            mean of the training set
+        sigma : float
+            variance of the training set
+
+        Returns
+        -------
+        prob : float
+            probability of the current sample
         """
         # Calculate probability from Gaussian density function
         const = -self.num_features / 2 * np.log(2 * np.pi) - 0.5 * np.sum(

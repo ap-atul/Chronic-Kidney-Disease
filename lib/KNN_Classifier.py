@@ -3,25 +3,52 @@ from collections import Counter
 from scipy.spatial import distance
 from tqdm import tqdm
 
+"""
+K Nearest Neighbour classification
+"""
+
 
 class KNN:
+    """
+    Classifier for nearest neighbours
+
+    Attributes
+    ----------
+    X_train : numpy array
+        training features to initialize
+    Y_train : numpy array
+        training lables to initialize
+    """
+
     def fit(self, X_train, Y_train):
         """
-        KNN does not have any training phase so
-        just initialization
-        :param X_train: training data
-        :param Y_train: training labels
-        :return: updates the classifier
+        KNN does not have any training phase so just initialization
+
+        Parameters
+        ----------
+        X_train : numpy array
+            training features array
+        Y_train : numpy array
+            training labels array
         """
         self.X_train = X_train
         self.Y_train = Y_train
 
     def predict(self, X_test, k=5):
         """
-        function to predict from the training data
-        :param X_test: test data
-        :param k: neighbours count
-        :return: list of predictions
+        Prediction based on training sample evaluation
+
+        Parameters
+        ----------
+        X_test : numpy array
+            testing samples to predict
+        k : int
+            number of neighbours closest to the point
+
+        Returns
+        -------
+        predictions : list
+            list of prediction labels
         """
         predictions = []
         for row in tqdm(X_test):
@@ -31,10 +58,19 @@ class KNN:
 
     def closest(self, row, k):
         """
-        function to do actual predict for each data
-        :param row: single list
-        :param k: neighbours count
-        :return: prediction a single label(0 /1)
+        Evaluation based on the training samples and its relation with the testing samples
+
+        Parameters
+        ----------
+        row : array
+            single row from the samples
+        k : int
+            neighbour count
+
+        Returns
+        -------
+        prediction : int
+            prediction calculated
         """
         distances = []
         for i in range(len(self.X_train)):
