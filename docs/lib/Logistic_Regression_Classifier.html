@@ -37,14 +37,37 @@
                 <summary>
                     <span>Expand source code</span>
                 </summary>
-                <pre><code class="python">from math import exp
-
+                <pre><code class="python">import numpy as np
 from tqdm import tqdm
 
 &#34;&#34;&#34;
 Custom implementation of the Logistic Regression classifier
 using coefficient calculations and sigmoid function
 &#34;&#34;&#34;
+
+
+def addBias(X):
+    &#34;&#34;&#34;
+    Adding column of bias to the input data
+
+    Parameters
+    ---------
+    X : numpy array
+        input array
+
+    Returns
+    -------
+    numpy array
+        column gets added
+    &#34;&#34;&#34;
+    return np.insert(X, 0, 1, axis=1)
+
+
+def softMax(z):
+    &#34;&#34;&#34;
+    Taking soft max of the vector
+    &#34;&#34;&#34;
+    return np.exp(z) / np.sum(np.exp(z), axis=1).reshape(-1, 1)
 
 
 class LR:
@@ -59,63 +82,71 @@ class LR:
         number of iterations
     &#34;&#34;&#34;
 
-    def __init__(self, l_rate=0.1, n_epoch=100):
-        self.l_rate = l_rate
+    def __init__(self, l_rate=0.001, n_epoch=100):
+        self.learning_rate = l_rate
         self.n_epoch = n_epoch
-        self.coefficients = []
+        self.weights = None
+        self.bias = None
+        self.data = None
+        self.classes = None
+        self.classLabels = None
 
-    def fit(self, X_train, Y_train):
+    def fit(self, X_train, y_train):
         &#34;&#34;&#34;
         run training and calculate coefficients for
         each such data
 
         Parameters
         ----------
-        X_train : array
+        X_train : numpy array
             training array
-        Y_train : array
+        y_train : numpy array
             training labels
         &#34;&#34;&#34;
-        self.coefficients = [0.0 for i in range(len(X_train[0]) + 1)]
-        for epoch in tqdm(range(self.n_epoch)):
-            for row_ind in range(len(X_train)):
-                y_pred = self.predict_cal(X_train[row_ind])
-                error = Y_train[row_ind] - y_pred
-                self.coefficients[0] = self.coefficients[0] + self.l_rate * error * y_pred * (1.0 - y_pred)
-                for i in range(len(X_train[row_ind])):
-                    self.coefficients[i + 1] = self.coefficients[i + 1] + \
-                                               self.l_rate * error * y_pred * (1.0 - y_pred) * \
-                                               X_train[row_ind][i]
+        self.data = addBias(X_train)
+        self.classes = np.unique(y_train)
+        self.classLabels = {c: i for i, c in enumerate(self.classes)}
+        labels = self.hotEncode(y_train)
 
-    def predict_cal(self, row):
+        self.weights = np.zeros(shape=(len(self.classes), self.data.shape[1]))
+        for _ in tqdm(range(self.n_epoch)):
+            # y = m*x + c
+            y = np.dot(self.data, self.weights.T).reshape(-1, len(self.classes))
+
+            # apply soft max
+            y_predicted = softMax(y)
+
+            # compute gradients
+            dw = np.dot((y_predicted - labels).T, self.data)
+
+            # update parameters
+            self.weights -= self.learning_rate * dw
+
+    def hotEncode(self, y):
         &#34;&#34;&#34;
-        Run the prediction for each data
+        Creating an identity matrix for the labels
 
         Parameters
-        ----------
-        row : array
-            current row in the testing samples
+        ---------
+        y : numpy array
+            labels
         &#34;&#34;&#34;
-        u = self.coefficients[0]
-        for i in range(len(row) - 1):
-            u += self.coefficients[i + 1] * row[i]
-        return 1.0 / (1.0 + exp(-u))  # sigmoid function
+        return np.eye(len(self.classes))[np.vectorize(lambda c: self.classLabels[c])(y).reshape(-1)]
 
-    def predict(self, X_validation):
+    def predict(self, X_test):
         &#34;&#34;&#34;
         Prediction done on the input testing samples
 
         Parameters
         ---------
-        X_validation : array
+        X_test : numpy array
             testing samples
         &#34;&#34;&#34;
-        predictions = list()
-        # make predictions (validate)
-        for row in X_validation:
-            y_pred = round(self.predict_cal(row))
-            predictions.append(y_pred)
-        return predictions</code></pre>
+        X_test = addBias(X_test)
+        prediction = np.dot(X_test, self.weights.T).reshape(-1, len(self.classes))
+        probability = softMax(prediction)
+        predictionClass = np.vectorize(lambda c: self.classes[c])(np.argmax(probability, axis=1))
+        return predictionClass</code></pre>
             </details>
         </section>
         <section>
@@ -123,13 +154,69 @@ class LR:
         <section>
         </section>
         <section>
+            <h2 class="section-title" id="header-functions">Functions</h2>
+            <dl>
+                <dt id="lib.Logistic_Regression_Classifier.addBias"><code class="name flex">
+                    <span>def <span class="ident">addBias</span></span>(<span>X)</span>
+                </code></dt>
+                <dd>
+                    <div class="desc"><p>Adding column of bias to the input data</p>
+                        <h2 id="parameters">Parameters</h2>
+                        <dl>
+                            <dt><strong><code>X</code></strong> :&ensp;<code>numpy array</code></dt>
+                            <dd>input array</dd>
+                        </dl>
+                        <h2 id="returns">Returns</h2>
+                        <dl>
+                            <dt><code>numpy array</code></dt>
+                            <dd>column gets added</dd>
+                        </dl>
+                    </div>
+                    <details class="source">
+                        <summary>
+                            <span>Expand source code</span>
+                        </summary>
+                        <pre><code class="python">def addBias(X):
+    &#34;&#34;&#34;
+    Adding column of bias to the input data
+
+    Parameters
+    ---------
+    X : numpy array
+        input array
+
+    Returns
+    -------
+    numpy array
+        column gets added
+    &#34;&#34;&#34;
+    return np.insert(X, 0, 1, axis=1)</code></pre>
+                    </details>
+                </dd>
+                <dt id="lib.Logistic_Regression_Classifier.softMax"><code class="name flex">
+                    <span>def <span class="ident">softMax</span></span>(<span>z)</span>
+                </code></dt>
+                <dd>
+                    <div class="desc"><p>Taking soft max of the vector</p></div>
+                    <details class="source">
+                        <summary>
+                            <span>Expand source code</span>
+                        </summary>
+                        <pre><code class="python">def softMax(z):
+    &#34;&#34;&#34;
+    Taking soft max of the vector
+    &#34;&#34;&#34;
+    return np.exp(z) / np.sum(np.exp(z), axis=1).reshape(-1, 1)</code></pre>
+                    </details>
+                </dd>
+            </dl>
         </section>
         <section>
             <h2 class="section-title" id="header-classes">Classes</h2>
             <dl>
                 <dt id="lib.Logistic_Regression_Classifier.LR"><code class="flex name class">
                     <span>class <span class="ident">LR</span></span>
-                    <span>(</span><span>l_rate=0.1, n_epoch=100)</span>
+                    <span>(</span><span>l_rate=0.001, n_epoch=100)</span>
                 </code></dt>
                 <dd>
                     <div class="desc"><p>Logistic Regression Classifier</p>
@@ -157,77 +244,85 @@ class LR:
         number of iterations
     &#34;&#34;&#34;
 
-    def __init__(self, l_rate=0.1, n_epoch=100):
-        self.l_rate = l_rate
+    def __init__(self, l_rate=0.001, n_epoch=100):
+        self.learning_rate = l_rate
         self.n_epoch = n_epoch
-        self.coefficients = []
+        self.weights = None
+        self.bias = None
+        self.data = None
+        self.classes = None
+        self.classLabels = None
 
-    def fit(self, X_train, Y_train):
+    def fit(self, X_train, y_train):
         &#34;&#34;&#34;
         run training and calculate coefficients for
         each such data
 
         Parameters
         ----------
-        X_train : array
+        X_train : numpy array
             training array
-        Y_train : array
+        y_train : numpy array
             training labels
         &#34;&#34;&#34;
-        self.coefficients = [0.0 for i in range(len(X_train[0]) + 1)]
-        for epoch in tqdm(range(self.n_epoch)):
-            for row_ind in range(len(X_train)):
-                y_pred = self.predict_cal(X_train[row_ind])
-                error = Y_train[row_ind] - y_pred
-                self.coefficients[0] = self.coefficients[0] + self.l_rate * error * y_pred * (1.0 - y_pred)
-                for i in range(len(X_train[row_ind])):
-                    self.coefficients[i + 1] = self.coefficients[i + 1] + \
-                                               self.l_rate * error * y_pred * (1.0 - y_pred) * \
-                                               X_train[row_ind][i]
+        self.data = addBias(X_train)
+        self.classes = np.unique(y_train)
+        self.classLabels = {c: i for i, c in enumerate(self.classes)}
+        labels = self.hotEncode(y_train)
 
-    def predict_cal(self, row):
+        self.weights = np.zeros(shape=(len(self.classes), self.data.shape[1]))
+        for _ in tqdm(range(self.n_epoch)):
+            # y = m*x + c
+            y = np.dot(self.data, self.weights.T).reshape(-1, len(self.classes))
+
+            # apply soft max
+            y_predicted = softMax(y)
+
+            # compute gradients
+            dw = np.dot((y_predicted - labels).T, self.data)
+
+            # update parameters
+            self.weights -= self.learning_rate * dw
+
+    def hotEncode(self, y):
         &#34;&#34;&#34;
-        Run the prediction for each data
+        Creating an identity matrix for the labels
 
         Parameters
-        ----------
-        row : array
-            current row in the testing samples
+        ---------
+        y : numpy array
+            labels
         &#34;&#34;&#34;
-        u = self.coefficients[0]
-        for i in range(len(row) - 1):
-            u += self.coefficients[i + 1] * row[i]
-        return 1.0 / (1.0 + exp(-u))  # sigmoid function
+        return np.eye(len(self.classes))[np.vectorize(lambda c: self.classLabels[c])(y).reshape(-1)]
 
-    def predict(self, X_validation):
+    def predict(self, X_test):
         &#34;&#34;&#34;
         Prediction done on the input testing samples
 
         Parameters
         ---------
-        X_validation : array
+        X_test : numpy array
             testing samples
         &#34;&#34;&#34;
-        predictions = list()
-        # make predictions (validate)
-        for row in X_validation:
-            y_pred = round(self.predict_cal(row))
-            predictions.append(y_pred)
-        return predictions</code></pre>
+        X_test = addBias(X_test)
+        prediction = np.dot(X_test, self.weights.T).reshape(-1, len(self.classes))
+        probability = softMax(prediction)
+        predictionClass = np.vectorize(lambda c: self.classes[c])(np.argmax(probability, axis=1))
+        return predictionClass</code></pre>
                     </details>
                     <h3>Methods</h3>
                     <dl>
                         <dt id="lib.Logistic_Regression_Classifier.LR.fit"><code class="name flex">
-                            <span>def <span class="ident">fit</span></span>(<span>self, X_train, Y_train)</span>
+                            <span>def <span class="ident">fit</span></span>(<span>self, X_train, y_train)</span>
                         </code></dt>
                         <dd>
                             <div class="desc"><p>run training and calculate coefficients for
                                 each such data</p>
                                 <h2 id="parameters">Parameters</h2>
                                 <dl>
-                                    <dt><strong><code>X_train</code></strong> :&ensp;<code>array</code></dt>
+                                    <dt><strong><code>X_train</code></strong> :&ensp;<code>numpy array</code></dt>
                                     <dd>training array</dd>
-                                    <dt><strong><code>Y_train</code></strong> :&ensp;<code>array</code></dt>
+                                    <dt><strong><code>y_train</code></strong> :&ensp;<code>numpy array</code></dt>
                                     <dd>training labels</dd>
                                 </dl>
                             </div>
@@ -235,38 +330,73 @@ class LR:
                                 <summary>
                                     <span>Expand source code</span>
                                 </summary>
-                                <pre><code class="python">def fit(self, X_train, Y_train):
+                                <pre><code class="python">def fit(self, X_train, y_train):
     &#34;&#34;&#34;
     run training and calculate coefficients for
     each such data
 
     Parameters
     ----------
-    X_train : array
+    X_train : numpy array
         training array
-    Y_train : array
+    y_train : numpy array
         training labels
     &#34;&#34;&#34;
-    self.coefficients = [0.0 for i in range(len(X_train[0]) + 1)]
-    for epoch in tqdm(range(self.n_epoch)):
-        for row_ind in range(len(X_train)):
-            y_pred = self.predict_cal(X_train[row_ind])
-            error = Y_train[row_ind] - y_pred
-            self.coefficients[0] = self.coefficients[0] + self.l_rate * error * y_pred * (1.0 - y_pred)
-            for i in range(len(X_train[row_ind])):
-                self.coefficients[i + 1] = self.coefficients[i + 1] + \
-                                           self.l_rate * error * y_pred * (1.0 - y_pred) * \
-                                           X_train[row_ind][i]</code></pre>
+    self.data = addBias(X_train)
+    self.classes = np.unique(y_train)
+    self.classLabels = {c: i for i, c in enumerate(self.classes)}
+    labels = self.hotEncode(y_train)
+
+    self.weights = np.zeros(shape=(len(self.classes), self.data.shape[1]))
+    for _ in tqdm(range(self.n_epoch)):
+        # y = m*x + c
+        y = np.dot(self.data, self.weights.T).reshape(-1, len(self.classes))
+
+        # apply soft max
+        y_predicted = softMax(y)
+
+        # compute gradients
+        dw = np.dot((y_predicted - labels).T, self.data)
+
+        # update parameters
+        self.weights -= self.learning_rate * dw</code></pre>
+                            </details>
+                        </dd>
+                        <dt id="lib.Logistic_Regression_Classifier.LR.hotEncode"><code class="name flex">
+                            <span>def <span class="ident">hotEncode</span></span>(<span>self, y)</span>
+                        </code></dt>
+                        <dd>
+                            <div class="desc"><p>Creating an identity matrix for the labels</p>
+                                <h2 id="parameters">Parameters</h2>
+                                <dl>
+                                    <dt><strong><code>y</code></strong> :&ensp;<code>numpy array</code></dt>
+                                    <dd>labels</dd>
+                                </dl>
+                            </div>
+                            <details class="source">
+                                <summary>
+                                    <span>Expand source code</span>
+                                </summary>
+                                <pre><code class="python">def hotEncode(self, y):
+    &#34;&#34;&#34;
+    Creating an identity matrix for the labels
+
+    Parameters
+    ---------
+    y : numpy array
+        labels
+    &#34;&#34;&#34;
+    return np.eye(len(self.classes))[np.vectorize(lambda c: self.classLabels[c])(y).reshape(-1)]</code></pre>
                             </details>
                         </dd>
                         <dt id="lib.Logistic_Regression_Classifier.LR.predict"><code class="name flex">
-                            <span>def <span class="ident">predict</span></span>(<span>self, X_validation)</span>
+                            <span>def <span class="ident">predict</span></span>(<span>self, X_test)</span>
                         </code></dt>
                         <dd>
                             <div class="desc"><p>Prediction done on the input testing samples</p>
                                 <h2 id="parameters">Parameters</h2>
                                 <dl>
-                                    <dt><strong><code>X_validation</code></strong> :&ensp;<code>array</code></dt>
+                                    <dt><strong><code>X_test</code></strong> :&ensp;<code>numpy array</code></dt>
                                     <dd>testing samples</dd>
                                 </dl>
                             </div>
@@ -274,51 +404,20 @@ class LR:
                                 <summary>
                                     <span>Expand source code</span>
                                 </summary>
-                                <pre><code class="python">def predict(self, X_validation):
+                                <pre><code class="python">def predict(self, X_test):
     &#34;&#34;&#34;
     Prediction done on the input testing samples
 
     Parameters
     ---------
-    X_validation : array
+    X_test : numpy array
         testing samples
     &#34;&#34;&#34;
-    predictions = list()
-    # make predictions (validate)
-    for row in X_validation:
-        y_pred = round(self.predict_cal(row))
-        predictions.append(y_pred)
-    return predictions</code></pre>
-                            </details>
-                        </dd>
-                        <dt id="lib.Logistic_Regression_Classifier.LR.predict_cal"><code class="name flex">
-                            <span>def <span class="ident">predict_cal</span></span>(<span>self, row)</span>
-                        </code></dt>
-                        <dd>
-                            <div class="desc"><p>Run the prediction for each data</p>
-                                <h2 id="parameters">Parameters</h2>
-                                <dl>
-                                    <dt><strong><code>row</code></strong> :&ensp;<code>array</code></dt>
-                                    <dd>current row in the testing samples</dd>
-                                </dl>
-                            </div>
-                            <details class="source">
-                                <summary>
-                                    <span>Expand source code</span>
-                                </summary>
-                                <pre><code class="python">def predict_cal(self, row):
-    &#34;&#34;&#34;
-    Run the prediction for each data
-
-    Parameters
-    ----------
-    row : array
-        current row in the testing samples
-    &#34;&#34;&#34;
-    u = self.coefficients[0]
-    for i in range(len(row) - 1):
-        u += self.coefficients[i + 1] * row[i]
-    return 1.0 / (1.0 + exp(-u))  # sigmoid function</code></pre>
+    X_test = addBias(X_test)
+    prediction = np.dot(X_test, self.weights.T).reshape(-1, len(self.classes))
+    probability = softMax(prediction)
+    predictionClass = np.vectorize(lambda c: self.classes[c])(np.argmax(probability, axis=1))
+    return predictionClass</code></pre>
                             </details>
                         </dd>
                     </dl>
@@ -337,6 +436,14 @@ class LR:
                     <li><code><a href="index.html" title="lib">lib</a></code></li>
                 </ul>
             </li>
+            <li><h3><a href="#header-functions">Functions</a></h3>
+                <ul class="">
+                    <li><code><a href="#lib.Logistic_Regression_Classifier.addBias"
+                                 title="lib.Logistic_Regression_Classifier.addBias">addBias</a></code></li>
+                    <li><code><a href="#lib.Logistic_Regression_Classifier.softMax"
+                                 title="lib.Logistic_Regression_Classifier.softMax">softMax</a></code></li>
+                </ul>
+            </li>
             <li><h3><a href="#header-classes">Classes</a></h3>
                 <ul>
                     <li>
@@ -345,11 +452,11 @@ class LR:
                         <ul class="">
                             <li><code><a href="#lib.Logistic_Regression_Classifier.LR.fit"
                                          title="lib.Logistic_Regression_Classifier.LR.fit">fit</a></code></li>
+                            <li><code><a href="#lib.Logistic_Regression_Classifier.LR.hotEncode"
+                                         title="lib.Logistic_Regression_Classifier.LR.hotEncode">hotEncode</a></code>
+                            </li>
                             <li><code><a href="#lib.Logistic_Regression_Classifier.LR.predict"
                                          title="lib.Logistic_Regression_Classifier.LR.predict">predict</a></code></li>
-                            <li><code><a href="#lib.Logistic_Regression_Classifier.LR.predict_cal"
-                                         title="lib.Logistic_Regression_Classifier.LR.predict_cal">predict_cal</a></code>
-                            </li>
                         </ul>
                     </li>
                 </ul>

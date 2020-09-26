@@ -1,10 +1,8 @@
-import pandas as pd
-from joblib import dump, load
+from joblib import load
 from matplotlib import pyplot as plt
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import plot_confusion_matrix
-from sklearn.model_selection import train_test_split
+
 
 # """Data set reading"""
 # df = pd.read_csv("../dataset/processed_kidney_disease.csv")
@@ -40,7 +38,7 @@ def controller_predict(controller, test_data, test_labels, plot=True):
     clf = load('model/lr_model_inbuilt.joblib')
     predictions = clf.predict(test_data)
     if plot:
-        plot_confusion_matrix(clf, test_data, predictions)
+        plot_confusion_matrix(clf, test_data, test_labels)
         plt.show()
 
     controller.setLRInbuilt(round(accuracy_score(test_labels, predictions) * 100, 3))

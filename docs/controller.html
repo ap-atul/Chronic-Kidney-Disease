@@ -92,7 +92,7 @@ class Controller:
         Calling both implementations of SKLearn and Custom KNN
         &#34;&#34;&#34;
         knn_classification.controller_predict(self, X_test, y_test)
-        custom_knn_classification.controller_predict(self, X_test, y_test)
+        custom_knn_classification.controller_predict(self, X_test.values, y_test.values)
 
     def callNBs(self):
         &#34;&#34;&#34;
@@ -106,7 +106,7 @@ class Controller:
         Calling both implementations of SKLearn and Custom LR
         &#34;&#34;&#34;
         logistic_regression_classification.controller_predict(self, X_test, y_test)
-        custom_logistic_regression_classification.controller_predict(self, X_test, y_test)
+        custom_logistic_regression_classification.controller_predict(self, X_test.values, y_test.values)
 
     def setKNNInbuilt(self, text):
         &#34;&#34;&#34;
@@ -215,7 +215,7 @@ class Controller:
         Calling both implementations of SKLearn and Custom KNN
         &#34;&#34;&#34;
         knn_classification.controller_predict(self, X_test, y_test)
-        custom_knn_classification.controller_predict(self, X_test, y_test)
+        custom_knn_classification.controller_predict(self, X_test.values, y_test.values)
 
     def callNBs(self):
         &#34;&#34;&#34;
@@ -229,7 +229,7 @@ class Controller:
         Calling both implementations of SKLearn and Custom LR
         &#34;&#34;&#34;
         logistic_regression_classification.controller_predict(self, X_test, y_test)
-        custom_logistic_regression_classification.controller_predict(self, X_test, y_test)
+        custom_logistic_regression_classification.controller_predict(self, X_test.values, y_test.values)
 
     def setKNNInbuilt(self, text):
         &#34;&#34;&#34;
@@ -299,7 +299,7 @@ class Controller:
     Calling both implementations of SKLearn and Custom KNN
     &#34;&#34;&#34;
     knn_classification.controller_predict(self, X_test, y_test)
-    custom_knn_classification.controller_predict(self, X_test, y_test)</code></pre>
+    custom_knn_classification.controller_predict(self, X_test.values, y_test.values)</code></pre>
                             </details>
                         </dd>
                         <dt id="controller.Controller.callLRs"><code class="name flex">
@@ -316,7 +316,7 @@ class Controller:
     Calling both implementations of SKLearn and Custom LR
     &#34;&#34;&#34;
     logistic_regression_classification.controller_predict(self, X_test, y_test)
-    custom_logistic_regression_classification.controller_predict(self, X_test, y_test)</code></pre>
+    custom_logistic_regression_classification.controller_predict(self, X_test.values, y_test.values)</code></pre>
                             </details>
                         </dd>
                         <dt id="controller.Controller.callNBs"><code class="name flex">

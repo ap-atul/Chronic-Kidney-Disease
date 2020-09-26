@@ -53,7 +53,7 @@ class Controller:
         Calling both implementations of SKLearn and Custom KNN
         """
         knn_classification.controller_predict(self, X_test, y_test)
-        custom_knn_classification.controller_predict(self, X_test, y_test)
+        custom_knn_classification.controller_predict(self, X_test.values, y_test.values)
 
     def callNBs(self):
         """
@@ -67,7 +67,7 @@ class Controller:
         Calling both implementations of SKLearn and Custom LR
         """
         logistic_regression_classification.controller_predict(self, X_test, y_test)
-        custom_logistic_regression_classification.controller_predict(self, X_test, y_test)
+        custom_logistic_regression_classification.controller_predict(self, X_test.values, y_test.values)
 
     def setKNNInbuilt(self, text):
         """

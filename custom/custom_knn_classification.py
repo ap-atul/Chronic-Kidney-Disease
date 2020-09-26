@@ -1,9 +1,6 @@
-import pandas as pd
-from joblib import dump, load
+from joblib import load
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
 
-from lib.KNN_Classifier import KNN
 
 # """Data set reading"""
 # df = pd.read_csv("../dataset/processed_kidney_disease.csv")
@@ -31,7 +28,7 @@ from lib.KNN_Classifier import KNN
 
 
 def controller_predict(controller, test_data, test_labels):
-    clf = load('model/knn_model_inbuilt_k_9.joblib')
+    clf = load('model/knn_model_custom_train_k_9.joblib')
     predictions = clf.predict(test_data)
     controller.setKNNCustom(round(accuracy_score(test_labels, predictions) * 100, 3))
 
