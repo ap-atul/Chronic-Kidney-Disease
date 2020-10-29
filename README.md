@@ -17,7 +17,12 @@ $ python3 ui.py
 ![screen](https://github.com/AP-Atul/Chronic-Kidney-Disease/blob/master/charts/window.png)
 
 ## Few Notes
-The data includes:
+The UCI Machine Learning Repository data set includes: 
+Link :: https://archive.ics.uci.edu/ml/datasets/Chronic_Kidney_Disease
+We use 24 + class = 25 ( 11 numeric ,14 nominal) 
+
+Training : 127 records
+Testing : 33 records
 
 * ge - age
 * bp - blood pressure
@@ -66,7 +71,7 @@ Classes
     * SKLearn : 100
 
 3. LR accuracy:
-    * Custom : 21.87
+    * Custom : 68.75
     * SKLearn : 100
 
 ## Directory details
